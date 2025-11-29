@@ -78,14 +78,40 @@ export const TEXT_GRADIENTS = [
 // Helper to Create Styles quickly
 const createStyle = (overrides: Partial<TypographyStyle>): TypographyStyle => ({ ...DEFAULT_STYLE, ...overrides });
 
-// Color Palettes (Only Colors)
+// Color Palettes (Inspired by Pantone & Design Trends)
 export const COLOR_PALETTES = [
-    { name: "Oceano", colors: { bg: "#0f172a", text: "#e2e8f0", primary: "#38bdf8", accent: "#0ea5e9" }},
-    { name: "Foresta", colors: { bg: "#052e16", text: "#f0fdf4", primary: "#86efac", accent: "#4ade80" }},
-    { name: "Tramonto", colors: { bg: "#431407", text: "#ffedd5", primary: "#fb923c", accent: "#f97316" }},
-    { name: "Monocromo", colors: { bg: "#000000", text: "#ffffff", primary: "#ffffff", accent: "#a3a3a3" }},
-    { name: "Reale", colors: { bg: "#312e81", text: "#e0e7ff", primary: "#c7d2fe", accent: "#fbbf24" }},
-    { name: "Lavanda", colors: { bg: "#2e1065", text: "#f3e8ff", primary: "#d8b4fe", accent: "#c084fc" }},
+    { 
+      name: "Peach Fuzz 2024", 
+      colors: { bg: "#FFBE98", text: "#594D46", primary: "#FF6D6A", accent: "#FFFFFF" } 
+    },
+    { 
+      name: "Viva Magenta", 
+      colors: { bg: "#BE3455", text: "#FCE7EB", primary: "#FFD700", accent: "#FFFFFF" } 
+    },
+    { 
+      name: "Classic Blue", 
+      colors: { bg: "#0F4C81", text: "#E6E6FA", primary: "#88B04B", accent: "#F5F5F5" } 
+    },
+    { 
+      name: "Ultimate Gray & Yellow", 
+      colors: { bg: "#939597", text: "#FFFFFF", primary: "#F5DF4D", accent: "#F5DF4D" } 
+    },
+    { 
+      name: "Midnight Luxury", 
+      colors: { bg: "#0F172A", text: "#E2E8F0", primary: "#D4AF37", accent: "#F59E0B" } 
+    },
+    { 
+      name: "Emerald Elegance", 
+      colors: { bg: "#064E3B", text: "#ECFDF5", primary: "#34D399", accent: "#D1FAE5" } 
+    },
+    { 
+      name: "Minimal Dark", 
+      colors: { bg: "#18181B", text: "#A1A1AA", primary: "#FFFFFF", accent: "#6366F1" } 
+    },
+    { 
+      name: "Paper & Ink", 
+      colors: { bg: "#F5F5F4", text: "#1C1917", primary: "#000000", accent: "#EF4444" } 
+    },
 ];
 
 export const BACKGROUND_PRESETS = [

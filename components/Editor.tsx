@@ -6,7 +6,7 @@ import {
   Palette, Type, Layout, Image as ImageIcon, 
   Trash2, Plus, GripVertical, Download, 
   Bold, Italic, Strikethrough, AlignLeft, AlignCenter, AlignRight, Underline, Type as TypeIcon, Minus, Plus as PlusIcon, ChevronDown, ChevronRight,
-  AlertCircle, Copy, Instagram, Globe, Phone, Music, Grid, Settings, Layers, Code, Smartphone, Check, Circle, Square, Image
+  AlertCircle, Copy, Instagram, Globe, Phone, Music, Grid, Settings, Layers, Code, Smartphone, Check, Circle, Square, Image, PaintBucket
 } from "lucide-react";
 
 interface EditorProps {
@@ -61,6 +61,27 @@ const Editor: React.FC<EditorProps> = ({ appState, setAppState, onExport, onRese
           // @ts-ignore
           b.styles[target][key] = value;
       });
+  };
+
+  const applyPalette = (palette: typeof COLOR_PALETTES[0]) => {
+    updateBrand(b => {
+      b.backgroundColor = palette.colors.bg;
+      b.textColor = palette.colors.text;
+      b.primaryColor = palette.colors.primary;
+      b.accentColor = palette.colors.accent;
+
+      // Reset specific overrides so base colors take effect
+      b.styles.sectionTitle.color = undefined;
+      b.styles.itemName.color = undefined;
+      b.styles.itemDescription.color = undefined;
+      b.styles.price.color = undefined;
+      
+      // Reset gradients
+      b.styles.sectionTitle.textGradient = undefined;
+      b.styles.itemName.textGradient = undefined;
+      b.styles.itemDescription.textGradient = undefined;
+      b.styles.price.textGradient = undefined;
+    });
   };
 
   const toggleSectionCollapse = (id: string) => {
@@ -228,7 +249,7 @@ const Editor: React.FC<EditorProps> = ({ appState, setAppState, onExport, onRese
         {/* --- STYLE TAB --- */}
         {activeTab === 'style' && (
           <div className="space-y-8 animate-in fade-in duration-300">
-            {/* LOGO SECTION - RESTORED */}
+            {/* LOGO SECTION */}
             <div className="space-y-4">
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2"><Image size={14} /> Identità (Logo)</h3>
               <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700">
@@ -241,7 +262,6 @@ const Editor: React.FC<EditorProps> = ({ appState, setAppState, onExport, onRese
                       Carica Logo
                       <input type="file" className="hidden" accept="image/*" onChange={(e) => { if(e.target.files?.[0]) updateBrand(b => b.logoUrl = URL.createObjectURL(e.target.files![0])) }} />
                     </label>
-                    <p className="text-[10px] text-gray-500 mt-2">Formato consigliato: PNG trasparente</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -310,7 +330,7 @@ const Editor: React.FC<EditorProps> = ({ appState, setAppState, onExport, onRese
                      </div>
                    )}
 
-                   {/* OVERLAY CONTROLS - RESTORED */}
+                   {/* OVERLAY CONTROLS */}
                    <div className="pt-2 border-t border-gray-700/50 space-y-3">
                         <label className="text-xs text-gray-400 font-bold block">Overlay (Leggibilità Testo)</label>
                         <div className="flex gap-2 text-xs">
@@ -330,24 +350,65 @@ const Editor: React.FC<EditorProps> = ({ appState, setAppState, onExport, onRese
             
             <hr className="border-gray-800" />
 
-            {/* Colors */}
+            {/* COLOR PALETTES & MANUAL SELECTORS - NEW REDESIGN */}
             <div className="space-y-4">
-               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Colori Base</h3>
-               <div className="grid grid-cols-2 gap-4">
-                 <div>
-                    <label className="text-xs text-gray-400 block mb-1">Primario (Titoli)</label>
-                    <input type="color" value={appState.brand.primaryColor} onChange={(e) => updateBrand(b => b.primaryColor = e.target.value)} className="w-full h-8 rounded bg-transparent cursor-pointer" />
-                 </div>
+               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2"><PaintBucket size={14} /> Armocromia & Palette</h3>
+               
+               {/* Quick Palettes */}
+               <div className="grid grid-cols-4 gap-2 mb-4">
+                  {COLOR_PALETTES.map((p, idx) => (
+                    <button 
+                      key={idx}
+                      onClick={() => applyPalette(p)}
+                      className="group relative flex flex-col rounded-lg overflow-hidden border border-gray-700 hover:border-white hover:scale-105 transition-all shadow-lg"
+                      title={p.name}
+                    >
+                      <div className="h-6 w-full" style={{ background: p.colors.bg }} />
+                      <div className="h-2 w-full flex">
+                        <div className="h-full flex-1" style={{ background: p.colors.text }} />
+                        <div className="h-full flex-1" style={{ background: p.colors.primary }} />
+                        <div className="h-full flex-1" style={{ background: p.colors.accent }} />
+                      </div>
+                    </button>
+                  ))}
+               </div>
+
+               {/* Manual Color Selectors */}
+               <div className="grid grid-cols-2 gap-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
                  <div>
                     <label className="text-xs text-gray-400 block mb-1">Sfondo Pagina</label>
-                    <input type="color" value={appState.brand.backgroundColor} onChange={(e) => updateBrand(b => b.backgroundColor = e.target.value)} className="w-full h-8 rounded bg-transparent cursor-pointer" />
+                    <div className="flex items-center gap-2 bg-gray-900 p-1.5 rounded border border-gray-700">
+                       <input type="color" value={appState.brand.backgroundColor} onChange={(e) => updateBrand(b => b.backgroundColor = e.target.value)} className="w-6 h-6 rounded cursor-pointer bg-transparent border-none p-0" />
+                       <span className="text-xs font-mono text-gray-400">{appState.brand.backgroundColor}</span>
+                    </div>
+                 </div>
+                 <div>
+                    <label className="text-xs text-gray-400 block mb-1">Testo Principale</label>
+                    <div className="flex items-center gap-2 bg-gray-900 p-1.5 rounded border border-gray-700">
+                       <input type="color" value={appState.brand.textColor} onChange={(e) => updateBrand(b => b.textColor = e.target.value)} className="w-6 h-6 rounded cursor-pointer bg-transparent border-none p-0" />
+                       <span className="text-xs font-mono text-gray-400">{appState.brand.textColor}</span>
+                    </div>
+                 </div>
+                 <div>
+                    <label className="text-xs text-gray-400 block mb-1">Primario (Titoli)</label>
+                    <div className="flex items-center gap-2 bg-gray-900 p-1.5 rounded border border-gray-700">
+                       <input type="color" value={appState.brand.primaryColor} onChange={(e) => updateBrand(b => b.primaryColor = e.target.value)} className="w-6 h-6 rounded cursor-pointer bg-transparent border-none p-0" />
+                       <span className="text-xs font-mono text-gray-400">{appState.brand.primaryColor}</span>
+                    </div>
+                 </div>
+                 <div>
+                    <label className="text-xs text-gray-400 block mb-1">Accento (Prezzi/Decor)</label>
+                    <div className="flex items-center gap-2 bg-gray-900 p-1.5 rounded border border-gray-700">
+                       <input type="color" value={appState.brand.accentColor} onChange={(e) => updateBrand(b => b.accentColor = e.target.value)} className="w-6 h-6 rounded cursor-pointer bg-transparent border-none p-0" />
+                       <span className="text-xs font-mono text-gray-400">{appState.brand.accentColor}</span>
+                    </div>
                  </div>
                </div>
             </div>
 
             <hr className="border-gray-800" />
 
-            {/* TYPOGRAPHY BUILDER - RESTORED & UPGRADED */}
+            {/* TYPOGRAPHY BUILDER */}
             <div className="space-y-4">
                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
                  <TypeIcon size={14} /> Tipografia Avanzata
@@ -388,7 +449,7 @@ const Editor: React.FC<EditorProps> = ({ appState, setAppState, onExport, onRese
                     </select>
                   </div>
 
-                  {/* COLOR & GRADIENT SELECTOR (NEW) */}
+                  {/* COLOR & GRADIENT SELECTOR */}
                   <div className="grid grid-cols-2 gap-4">
                      <div>
                        <label className="text-xs text-gray-400 block mb-1">Colore Specifico</label>
