@@ -12,7 +12,7 @@ const Preview: React.FC<PreviewProps> = ({ appState }) => {
 
   return (
     <div className="flex-1 bg-black/50 flex flex-col items-center justify-center relative overflow-hidden p-8">
-      {/* Viewport Toggles */}
+      {/* Viewport Toggles (Desktop only) */}
       <div className="absolute top-6 flex gap-2 bg-gray-800/80 p-1 rounded-lg backdrop-blur z-20">
         <button 
           onClick={() => setMode('mobile')}
@@ -43,7 +43,7 @@ const Preview: React.FC<PreviewProps> = ({ appState }) => {
       </div>
       
       <div className="absolute bottom-4 text-xs text-gray-500">
-        {mode === 'mobile' ? 'Anteprima iPhone 13 / 14' : 'Anteprima Desktop / Tablet'}
+        {mode === 'mobile' ? 'Anteprima iPhone' : 'Anteprima Web'}
       </div>
     </div>
   );
