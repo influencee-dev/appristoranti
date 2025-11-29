@@ -1,3 +1,4 @@
+
 export interface MenuItem {
   id: string;
   name: string;
@@ -37,6 +38,8 @@ export interface TypographyStyle {
   uppercase: boolean;
   underline: boolean;
   scale: number; // 1 is base size
+  color?: string; // Specific override color
+  textGradient?: string; // CSS Gradient string (e.g. "linear-gradient(...)")
 }
 
 export interface BrandProfile {

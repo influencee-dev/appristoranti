@@ -1,6 +1,7 @@
+
 import React from "react";
 import { BrandProfile, FullMenu, TypographyStyle } from "../types";
-import { Star, AlertCircle, Instagram, Globe, Phone, Music } from "lucide-react";
+import { Star, AlertCircle, Instagram, Globe, Phone, Music, ChevronRight, Hash } from "lucide-react";
 
 interface DigitalMenuProps {
   menu: FullMenu;
@@ -55,90 +56,177 @@ const DigitalMenu: React.FC<DigitalMenuProps> = ({
   const fontBodyClass = `font-${brand.fontBody}`;
 
   // Helper to generate CSS style object from TypographyStyle
-  const getTypoStyle = (style: TypographyStyle, colorOverride?: string): React.CSSProperties => ({
-    textAlign: style.align,
-    fontWeight: style.bold ? 'bold' : 'normal',
-    fontStyle: style.italic ? 'italic' : 'normal',
-    textTransform: style.uppercase ? 'uppercase' : 'none',
-    textDecoration: style.underline ? 'underline' : 'none',
-    fontSize: `${style.scale * 1}em`, // Relative to container font size
-    color: colorOverride,
-    display: 'block',
-  });
+  const getTypoStyle = (style: TypographyStyle, colorOverride?: string): React.CSSProperties => {
+    const css: React.CSSProperties = {
+      textAlign: style.align,
+      fontWeight: style.bold ? 'bold' : 'normal',
+      fontStyle: style.italic ? 'italic' : 'normal',
+      textTransform: style.uppercase ? 'uppercase' : 'none',
+      textDecoration: style.underline ? 'underline' : 'none',
+      fontSize: `${style.scale * 1}em`, // Relative to container font size
+      display: 'block',
+    };
 
-  // Render Logic based on Carousel Mode
+    // Color Logic: Gradient > Specific Color > Override > Inherit
+    if (style.textGradient) {
+      css.backgroundImage = style.textGradient;
+      css.WebkitBackgroundClip = 'text';
+      css.WebkitTextFillColor = 'transparent';
+      css.backgroundClip = 'text';
+    } else if (style.color) {
+      css.color = style.color;
+    } else if (colorOverride) {
+      css.color = colorOverride;
+    }
+
+    return css;
+  };
+
+  // Render Logic based on Carousel Mode (Magazine Style 4:5)
   const renderCarouselContent = () => {
     if (!carouselMode || !carouselMode.active) return null;
 
+    // Common Card Style for Glassmorphism
+    const cardStyle = "bg-black/30 backdrop-blur-xl border border-white/10 rounded-[3rem] p-12 shadow-2xl flex flex-col h-full justify-between relative overflow-hidden";
+    const magazineBorder = "absolute inset-4 border border-white/20 rounded-[2.5rem] pointer-events-none";
+
+    // --- SLIDE 1: COVER ---
     if (carouselMode.slideType === 'cover') {
       return (
-        <div className="flex-1 flex flex-col items-center justify-center text-center p-12 h-full">
-           {brand.logoUrl && (
-              <img src={brand.logoUrl} className={`w-48 h-48 mb-8 shadow-2xl ${brand.logoStyle === 'circle' ? 'rounded-full' : 'rounded-xl'}`} />
-           )}
-           <h1 className={`text-7xl font-bold leading-tight mb-6 ${fontTitleClass}`} style={{ color: brand.primaryColor }}>
-             {menu.title}
-           </h1>
-           <div className="w-24 h-1 bg-current mb-6 opacity-50" style={{ color: brand.accentColor }}></div>
-           {menu.subtitle && (
-             <p className="text-3xl uppercase tracking-widest" style={{ color: brand.accentColor }}>{menu.subtitle}</p>
-           )}
-           <div className="mt-auto pt-12 opacity-60 text-xl">Scorri per scoprire il menù &rarr;</div>
+        <div className="flex-1 p-8 h-full flex flex-col justify-center">
+           <div className={`${cardStyle} items-center text-center`}>
+               <div className={magazineBorder}></div>
+               
+               {/* Brand Top */}
+               <div className="mt-8">
+                  {brand.logoUrl && (
+                     <img src={brand.logoUrl} className={`w-40 h-40 mx-auto shadow-2xl object-cover border-4 border-white/10 ${brand.logoStyle === 'circle' ? 'rounded-full' : 'rounded-3xl'}`} />
+                  )}
+                  <div className="mt-6 text-sm uppercase tracking-[0.3em] opacity-70">Ristorante</div>
+               </div>
+
+               {/* Big Title */}
+               <div className="my-auto">
+                   <h1 className={`text-[6em] leading-[0.9] font-bold mb-6 ${fontTitleClass} drop-shadow-2xl`} style={getTypoStyle({ ...brand.styles.sectionTitle, scale: 1 }, brand.primaryColor)}>
+                     {menu.title}
+                   </h1>
+                   <div className="w-32 h-2 bg-current mx-auto rounded-full" style={{ color: brand.accentColor }}></div>
+               </div>
+
+               {/* Badge & Subtitle */}
+               <div className="mb-12">
+                   {menu.subtitle && (
+                     <div className="inline-block px-8 py-3 bg-white/10 backdrop-blur rounded-full border border-white/20">
+                       <p className="text-2xl uppercase tracking-widest font-bold" style={{ color: brand.accentColor }}>{menu.subtitle}</p>
+                     </div>
+                   )}
+               </div>
+
+               {/* Swipe Indicator */}
+               <div className="absolute bottom-8 right-8 flex items-center gap-2 animate-pulse">
+                  <span className="text-lg font-bold opacity-60">SCOPRI</span>
+                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    <ChevronRight size={24} />
+                  </div>
+               </div>
+           </div>
         </div>
       );
     }
 
+    // --- SLIDE 2...N: SECTION ---
     if (carouselMode.slideType === 'section' && typeof carouselMode.sectionIndex === 'number') {
       const section = menu.sections[carouselMode.sectionIndex];
       return (
-        <div className="flex-1 flex flex-col justify-center p-12 h-full">
-            <h2 
-              className={`text-6xl mb-12 pb-4 border-b-2 ${fontTitleClass} text-center`}
-              style={{ 
-                  color: brand.primaryColor,
-                  borderColor: brand.accentColor 
-              }}
-            >
-              {section.title}
-            </h2>
-            <div className="space-y-8">
-               {section.items.map((item) => (
-                  <div key={item.id} className="group">
-                    <div className="flex justify-between items-baseline mb-2">
-                       <h3 className="text-3xl font-bold" style={{ color: item.highlight ? brand.accentColor : 'inherit' }}>
-                         {item.highlight && '★ '} {item.name}
-                       </h3>
-                       <span className="text-3xl font-bold" style={{ color: brand.accentColor }}>{item.price}</span>
+        <div className="flex-1 p-6 h-full flex flex-col">
+            <div className={`${cardStyle} !p-0`}>
+                {/* Header Section */}
+                <div className="p-10 pb-6 border-b border-white/10 bg-black/20">
+                    <div className="flex justify-between items-start">
+                        <h2 
+                          className={`text-[4em] leading-none ${fontTitleClass}`}
+                          style={getTypoStyle(brand.styles.sectionTitle, brand.primaryColor)}
+                        >
+                          {section.title}
+                        </h2>
+                        <span className="text-6xl opacity-10 font-bold font-sans">
+                           {(carouselMode.sectionIndex + 1).toString().padStart(2, '0')}
+                        </span>
                     </div>
-                    {item.description && <p className="text-xl opacity-80 italic">{item.description}</p>}
-                  </div>
-               ))}
+                </div>
+
+                {/* Items List */}
+                <div className="flex-1 p-10 space-y-8 overflow-hidden">
+                   {section.items.slice(0, 6).map((item) => ( // Limit items per slide for safety
+                      <div key={item.id} className="group">
+                        <div className="flex justify-between items-baseline mb-1 border-b border-dashed border-white/10 pb-2">
+                           <h3 className={`text-3xl font-bold truncate pr-4 ${fontBodyClass}`} style={getTypoStyle(brand.styles.itemName, item.highlight ? brand.accentColor : undefined)}>
+                             {item.name}
+                           </h3>
+                           <span className={`text-3xl font-bold whitespace-nowrap ${fontTitleClass}`} style={getTypoStyle(brand.styles.price, brand.accentColor)}>{item.price}</span>
+                        </div>
+                        {item.description && <div className="text-lg opacity-70 italic line-clamp-2 leading-tight" style={getTypoStyle(brand.styles.itemDescription)} dangerouslySetInnerHTML={{ __html: item.description }} />}
+                      </div>
+                   ))}
+                   {section.items.length > 6 && <div className="text-center opacity-50 italic">...e molto altro</div>}
+                </div>
+
+                {/* Footer Page Num */}
+                <div className="p-6 bg-black/20 flex justify-between items-center text-sm opacity-50 font-mono">
+                    <span>{menu.title}</span>
+                    <span>{carouselMode.sectionIndex + 2} / {menu.sections.length + 2}</span>
+                </div>
             </div>
-            <div className="mt-auto text-center text-xl opacity-50">{carouselMode.sectionIndex + 2} / {menu.sections.length + 2}</div>
         </div>
       );
     }
 
+    // --- SLIDE LAST: CONTACTS ---
     if (carouselMode.slideType === 'footer') {
       return (
-        <div className="flex-1 flex flex-col items-center justify-center text-center p-12 h-full">
-           <h2 className={`text-5xl font-bold mb-12 ${fontTitleClass}`} style={{ color: brand.primaryColor }}>Prenota Ora</h2>
-           
-           {menu.socials && (
-             <div className="space-y-8 text-2xl">
-                {menu.socials.companyName && <div className="text-4xl font-bold uppercase mb-8">{menu.socials.companyName}</div>}
-                
-                {menu.socials.phone && (
-                  <div className="flex items-center justify-center gap-4 text-3xl font-bold p-4 bg-white/10 rounded-xl" style={{color: brand.accentColor}}>
-                    <Phone size={40} /> {menu.socials.phone}
-                  </div>
-                )}
-                {menu.socials.instagram && <div className="flex items-center justify-center gap-3"><Instagram size={32} /> {menu.socials.instagram}</div>}
-                {menu.socials.website && <div className="flex items-center justify-center gap-3"><Globe size={32} /> {menu.socials.website}</div>}
-             </div>
-           )}
-           
-           {menu.footerNote && <p className="mt-16 opacity-60 max-w-lg">{menu.footerNote}</p>}
+        <div className="flex-1 p-8 h-full flex flex-col justify-center">
+           <div className={`${cardStyle} items-center justify-center text-center`}>
+               <div className={magazineBorder}></div>
+               
+               <h2 className={`text-[4em] font-bold mb-12 ${fontTitleClass}`} style={{ color: brand.primaryColor }}>Prenota Ora</h2>
+               
+               {menu.socials && (
+                 <div className="w-full space-y-8 px-8">
+                    {menu.socials.companyName && <div className="text-4xl font-bold uppercase tracking-widest mb-12 pb-8 border-b border-white/20">{menu.socials.companyName}</div>}
+                    
+                    {menu.socials.phone && (
+                      <div className="flex items-center justify-between p-6 bg-white/10 rounded-2xl border border-white/10">
+                         <div className="flex items-center gap-4 text-3xl font-bold" style={{color: brand.accentColor}}>
+                           <Phone size={40} /> Telefono
+                         </div>
+                         <span className="text-3xl font-mono">{menu.socials.phone}</span>
+                      </div>
+                    )}
+                    
+                    {menu.socials.instagram && (
+                      <div className="flex items-center justify-between p-6 bg-white/5 rounded-2xl border border-white/5">
+                         <div className="flex items-center gap-4 text-2xl font-bold opacity-80">
+                           <Instagram size={32} /> Instagram
+                         </div>
+                         <span className="text-2xl">{menu.socials.instagram.replace('@','')}</span>
+                      </div>
+                    )}
+
+                     {menu.socials.website && (
+                      <div className="flex items-center justify-between p-6 bg-white/5 rounded-2xl border border-white/5">
+                         <div className="flex items-center gap-4 text-2xl font-bold opacity-80">
+                           <Globe size={32} /> Website
+                         </div>
+                         <span className="text-2xl">{menu.socials.website.replace('https://','')}</span>
+                      </div>
+                    )}
+                 </div>
+               )}
+               
+               <div className="absolute bottom-8 text-center w-full opacity-40 text-lg uppercase tracking-widest">
+                  Link in Bio
+               </div>
+           </div>
         </div>
       );
     }
@@ -194,7 +282,7 @@ const DigitalMenu: React.FC<DigitalMenuProps> = ({
                 )}
               <h1 
                 className={`text-4xl md:text-5xl font-bold leading-tight ${fontTitleClass}`}
-                style={{ color: brand.primaryColor, fontSize: isPrint ? '4em' : undefined }}
+                style={{ ...getTypoStyle(brand.styles.sectionTitle, brand.primaryColor), fontSize: isPrint ? '4em' : undefined }}
               >
                 {menu.title}
               </h1>
@@ -235,7 +323,7 @@ const DigitalMenu: React.FC<DigitalMenuProps> = ({
                           <div className="flex-1">
                               <h3 
                                 className={`flex items-center gap-2`}
-                                style={getTypoStyle(brand.styles.itemName, item.highlight ? brand.accentColor : 'inherit')}
+                                style={getTypoStyle(brand.styles.itemName, item.highlight ? brand.accentColor : undefined)}
                               >
                                 {item.highlight && <Star size={16} fill={brand.accentColor} stroke={brand.accentColor} />}
                                 {item.name}

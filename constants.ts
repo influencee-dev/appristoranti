@@ -1,3 +1,4 @@
+
 import { BrandProfile, FullMenu, ThemePreset, PresetCategory, TypographyStyle } from "./types";
 
 const DEFAULT_STYLE: TypographyStyle = {
@@ -7,6 +8,8 @@ const DEFAULT_STYLE: TypographyStyle = {
   uppercase: false,
   underline: false,
   scale: 1,
+  color: undefined,
+  textGradient: undefined
 };
 
 export const DEFAULT_BRAND: BrandProfile = {
@@ -60,6 +63,16 @@ export const FONTS = [
   { value: "lato", label: "Lato (Pulito)" },
   { value: "opensans", label: "Open Sans (Leggibile)" },
   { value: "dancing", label: "Dancing Script (Manuale)" },
+];
+
+export const TEXT_GRADIENTS = [
+  { name: "Nessuno", value: "" },
+  { name: "Oro", value: "linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c)" },
+  { name: "Argento", value: "linear-gradient(to right, #dcdcdc, #f8f8f8, #a9a9a9)" },
+  { name: "Rame", value: "linear-gradient(to right, #e65c00, #f9d423)" },
+  { name: "Oceano", value: "linear-gradient(to right, #2E3192, #1BFFFF)" },
+  { name: "Tramonto", value: "linear-gradient(to right, #fc5c7d, #6a82fb)" },
+  { name: "Lime", value: "linear-gradient(to right, #11998e, #38ef7d)" },
 ];
 
 // Helper to Create Styles quickly

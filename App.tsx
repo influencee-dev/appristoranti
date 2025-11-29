@@ -5,7 +5,7 @@ import Onboarding from "./components/Onboarding";
 import DigitalMenu from "./components/DigitalMenu";
 import { AppState, FullMenu, BrandProfile } from "./types";
 import { DEFAULT_BRAND, DEFAULT_MENU } from "./constants";
-import { PenTool, Eye, Layout, Download } from "lucide-react";
+import { PenTool, Eye, Settings } from "lucide-react";
 
 const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>(() => {
@@ -77,12 +77,14 @@ const App: React.FC = () => {
 
   const handleExport = async (type: 'image' | 'html' | 'pdf' | 'carousel') => {
     setIsExporting(true);
-    await new Promise(r => setTimeout(r, 500)); // Wait for render/images
+    await new Promise(r => setTimeout(r, 800)); // Wait longer for render/images
 
     if (type === 'html') {
       // Generate Standalone HTML
-      const htmlContent = `
-<!DOCTYPE html>
+      // Serialize state for re-hydration
+      const safeState = JSON.stringify(appState).replace(/</g, '\\u003c');
+      
+      const htmlContent = `<!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8">
@@ -90,26 +92,59 @@ const App: React.FC = () => {
   <title>${appState.menu.title}</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&family=Open+Sans:wght@400;600&family=Merriweather:wght@300;700&family=Oswald:wght@400;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            'playfair': ['"Playfair Display"', 'serif'],
+            'lato': ['"Lato"', 'sans-serif'],
+            'opensans': ['"Open Sans"', 'sans-serif'],
+            'merriweather': ['"Merriweather"', 'serif'],
+            'oswald': ['"Oswald"', 'sans-serif'],
+            'dancing': ['"Dancing Script"', 'cursive'],
+          }
+        }
+      }
+    }
+  </script>
   <style>
-    body { margin: 0; padding: 0; background: ${appState.brand.backgroundColor}; }
-    .rich-text b { font-weight: bold; } .rich-text i { font-style: italic; }
+    body { margin: 0; padding: 0; background: ${appState.brand.backgroundColor}; color: ${appState.brand.textColor}; }
+    .rich-text b { font-weight: bold; } .rich-text i { font-style: italic; } .rich-text u { text-decoration: underline; }
+    #root { min-height: 100vh; }
   </style>
 </head>
 <body>
-  <div id="root"></div>
+  <div id="root">
+    <!-- Static Render Fallback (Simplified) -->
+    <div style="padding: 2rem; text-align: center;">
+       <h1 style="font-size: 3rem; margin-bottom: 1rem; color: ${appState.brand.primaryColor}; font-family: ${appState.brand.fontTitle}, serif;">${appState.menu.title}</h1>
+       <p style="font-size: 1.2rem; color: ${appState.brand.accentColor};">${appState.menu.subtitle || ''}</p>
+       <div style="margin-top: 2rem;">
+          ${appState.menu.sections.map(s => `
+            <div style="margin-bottom: 2rem;">
+               <h2 style="font-size: 1.5rem; border-bottom: 1px solid ${appState.brand.accentColor}; padding-bottom: 0.5rem; margin-bottom: 1rem; color: ${appState.brand.primaryColor};">${s.title}</h2>
+               ${s.items.map(i => `
+                 <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <strong style="color: ${i.highlight ? appState.brand.accentColor : 'inherit'}">${i.name}</strong>
+                    <span>${i.price || ''}</span>
+                 </div>
+                 ${i.description ? `<div style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 1rem;">${i.description}</div>` : ''}
+               `).join('')}
+            </div>
+          `).join('')}
+       </div>
+    </div>
+  </div>
   <script>
-    // Inserisci qui una logica semplificata di render o usa React CDN
-    // Per semplicità in questo export statico, si consiglia di usare l'immagine generata come sfondo 
-    // o integrare il JSON per renderizzarlo. 
-    // Qui sotto mostriamo i dati grezzi per debug o integrazione futura.
-    window.MENU_DATA = ${JSON.stringify(appState)};
-    document.body.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100vh;color:white;font-family:sans-serif;text-align:center;"><h1>${appState.menu.title}</h1><p>Vedi il menù completo scaricando l\\'immagine o integrando questo HTML.</p></div>';
+    window.MENU_DATA = ${safeState};
+    console.log("Menu Data Loaded", window.MENU_DATA);
   </script>
 </body>
 </html>`;
       const blob = new Blob([htmlContent], { type: "text/html" });
       const url = URL.createObjectURL(blob);
-      downloadImage(url, "menu-website.html");
+      downloadImage(url, `${appState.menu.title.replace(/\s+/g, '-').toLowerCase()}.html`);
       setIsExporting(false);
       return;
     }
@@ -121,21 +156,21 @@ const App: React.FC = () => {
 
       // 1. Cover
       setCarouselMode({ active: true, slideType: 'cover' });
-      await new Promise(r => setTimeout(r, 300));
+      await new Promise(r => setTimeout(r, 400));
       const coverCanvas = await window.html2canvas(container, { useCORS: true, scale: 2 });
       downloadImage(coverCanvas.toDataURL('image/png'), '01-copertina.png');
 
       // 2. Sections
       for (let i = 0; i < appState.menu.sections.length; i++) {
         setCarouselMode({ active: true, slideType: 'section', sectionIndex: i });
-        await new Promise(r => setTimeout(r, 300));
+        await new Promise(r => setTimeout(r, 400));
         const sectionCanvas = await window.html2canvas(container, { useCORS: true, scale: 2 });
         downloadImage(sectionCanvas.toDataURL('image/png'), `0${i + 2}-sezione-${i + 1}.png`);
       }
 
       // 3. Footer
       setCarouselMode({ active: true, slideType: 'footer' });
-      await new Promise(r => setTimeout(r, 300));
+      await new Promise(r => setTimeout(r, 400));
       const footerCanvas = await window.html2canvas(container, { useCORS: true, scale: 2 });
       downloadImage(footerCanvas.toDataURL('image/png'), `99-contatti.png`);
 
@@ -169,14 +204,14 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col md:flex-row h-screen w-screen overflow-hidden text-white font-sans selection:bg-indigo-500 selection:text-white bg-gray-950">
+    <div className="flex flex-col md:flex-row h-[100dvh] w-screen overflow-hidden text-white font-sans selection:bg-indigo-500 selection:text-white bg-gray-950">
       
       {/* Loading Overlay */}
       {isExporting && (
         <div className="absolute inset-0 z-[100] bg-black/90 flex items-center justify-center flex-col gap-4 backdrop-blur-sm">
            <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin shadow-lg shadow-indigo-500/50"></div>
            <p className="font-bold text-xl animate-pulse">Generazione Export in corso...</p>
-           <p className="text-sm text-gray-400">Stiamo creando le immagini per te.</p>
+           <p className="text-sm text-gray-400">Stiamo creando le immagini ottimizzate per te.</p>
         </div>
       )}
 
@@ -190,21 +225,21 @@ const App: React.FC = () => {
       <div className="md:hidden flex flex-col h-full">
         {/* Mobile Header */}
         <div className="h-14 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4 shrink-0">
-           <span className="font-bold text-lg font-playfair">AI Menu Builder</span>
-           <button onClick={handleReset} className="p-2 text-gray-400 hover:text-white">
-             <SettingsIcon />
+           <span className="font-bold text-lg font-playfair bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">AI Menu</span>
+           <button onClick={handleReset} className="p-2 text-gray-400 hover:text-white" title="Ricomincia">
+             <Settings size={20} />
            </button>
         </div>
 
         {/* Mobile Viewport Content */}
         <div className="flex-1 overflow-hidden relative">
            {mobileTab === 'editor' ? (
-             <div className="h-full overflow-y-auto">
+             <div className="h-full overflow-y-auto custom-scrollbar">
                 <Editor appState={appState} setAppState={setAppState} onExport={handleExport} onReset={handleReset} isMobile={true} />
              </div>
            ) : (
-             <div className="h-full bg-black/50 p-4 flex items-center justify-center">
-                <div className="w-full h-full max-w-[375px] bg-gray-900 rounded-xl overflow-hidden shadow-2xl border border-gray-700">
+             <div className="h-full bg-black/90 flex items-center justify-center p-4">
+                <div className="w-full h-full max-w-[375px] bg-gray-900 rounded-xl overflow-hidden shadow-2xl border border-gray-800 ring-1 ring-white/10">
                    <div className="h-full overflow-y-auto custom-scrollbar">
                       <DigitalMenu menu={appState.menu} brand={appState.brand} previewMode="mobile" />
                    </div>
@@ -217,14 +252,14 @@ const App: React.FC = () => {
         <div className="h-16 bg-gray-900 border-t border-gray-800 grid grid-cols-2 shrink-0 z-50 pb-safe">
            <button 
              onClick={() => setMobileTab('editor')}
-             className={`flex flex-col items-center justify-center gap-1 transition-colors ${mobileTab === 'editor' ? 'text-indigo-400 bg-gray-800' : 'text-gray-500'}`}
+             className={`flex flex-col items-center justify-center gap-1 transition-all ${mobileTab === 'editor' ? 'text-indigo-400 bg-gray-800/50' : 'text-gray-500'}`}
            >
              <PenTool size={20} />
              <span className="text-xs font-medium">Modifica</span>
            </button>
            <button 
              onClick={() => setMobileTab('preview')}
-             className={`flex flex-col items-center justify-center gap-1 transition-colors ${mobileTab === 'preview' ? 'text-indigo-400 bg-gray-800' : 'text-gray-500'}`}
+             className={`flex flex-col items-center justify-center gap-1 transition-all ${mobileTab === 'preview' ? 'text-indigo-400 bg-gray-800/50' : 'text-gray-500'}`}
            >
              <Eye size={20} />
              <span className="text-xs font-medium">Anteprima</span>
@@ -237,19 +272,18 @@ const App: React.FC = () => {
          {/* Mobile Story Export */}
          <div id="export-container-mobile" style={{ width: '1080px', height: '1920px' }}>
             <DigitalMenu menu={appState.menu} brand={appState.brand} previewMode="mobile" scale={2.88} /> 
-            {/* scale prop allows us to simulate high res within component if needed, or just CSS zoom */}
          </div>
          {/* A4 Export */}
          <div id="export-container-a4" style={{ width: '2480px', height: '3508px' }}> 
-            {/* A4 @ 300dpi is big, html2canvas handles it better if element is large */}
             <DigitalMenu menu={appState.menu} brand={appState.brand} previewMode="print" scale={3} />
          </div>
-         {/* Carousel Export Square */}
-         <div id="export-container-carousel" style={{ width: '1080px', height: '1080px' }}>
+         {/* Carousel Export (Instagram Portrait 4:5 - 1080x1350) */}
+         <div id="export-container-carousel" style={{ width: '1080px', height: '1350px' }}>
             <DigitalMenu 
               menu={appState.menu} 
               brand={appState.brand} 
               previewMode="mobile" 
+              scale={2}
               carouselMode={carouselMode}
             />
          </div>
@@ -257,10 +291,5 @@ const App: React.FC = () => {
     </div>
   );
 };
-
-// Simple icon wrapper
-const SettingsIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-)
 
 export default App;

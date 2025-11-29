@@ -1,11 +1,12 @@
+
 import React, { useState, useRef } from "react";
 import { AppState, BrandProfile, FullMenu, TypographyStyle } from "../types";
-import { PRESET_CATEGORIES, FONTS, COLOR_PALETTES, BACKGROUND_PRESETS } from "../constants";
+import { PRESET_CATEGORIES, FONTS, COLOR_PALETTES, BACKGROUND_PRESETS, TEXT_GRADIENTS } from "../constants";
 import { 
   Palette, Type, Layout, Image as ImageIcon, 
   Trash2, Plus, GripVertical, Download, 
   Bold, Italic, Strikethrough, AlignLeft, AlignCenter, AlignRight, Underline, Type as TypeIcon, Minus, Plus as PlusIcon, ChevronDown, ChevronRight,
-  AlertCircle, Copy, Instagram, Globe, Phone, Music, Grid, Settings, Layers, Code, Smartphone, Check
+  AlertCircle, Copy, Instagram, Globe, Phone, Music, Grid, Settings, Layers, Code, Smartphone, Check, Circle, Square, Image
 } from "lucide-react";
 
 interface EditorProps {
@@ -227,6 +228,32 @@ const Editor: React.FC<EditorProps> = ({ appState, setAppState, onExport, onRese
         {/* --- STYLE TAB --- */}
         {activeTab === 'style' && (
           <div className="space-y-8 animate-in fade-in duration-300">
+            {/* LOGO SECTION - RESTORED */}
+            <div className="space-y-4">
+              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2"><Image size={14} /> Identità (Logo)</h3>
+              <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className={`w-16 h-16 bg-gray-900 border border-dashed border-gray-600 flex items-center justify-center overflow-hidden shrink-0 ${appState.brand.logoStyle === 'circle' ? 'rounded-full' : appState.brand.logoStyle === 'rounded' ? 'rounded-lg' : ''}`}>
+                    {appState.brand.logoUrl ? <img src={appState.brand.logoUrl} className="w-full h-full object-cover" /> : <ImageIcon className="text-gray-600" />}
+                  </div>
+                  <div>
+                    <label className="inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded cursor-pointer transition-colors">
+                      Carica Logo
+                      <input type="file" className="hidden" accept="image/*" onChange={(e) => { if(e.target.files?.[0]) updateBrand(b => b.logoUrl = URL.createObjectURL(e.target.files![0])) }} />
+                    </label>
+                    <p className="text-[10px] text-gray-500 mt-2">Formato consigliato: PNG trasparente</p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => updateBrand(b => b.logoStyle = 'original')} className={`flex-1 py-2 text-xs font-medium rounded border ${appState.brand.logoStyle === 'original' ? 'bg-indigo-900/50 border-indigo-500 text-indigo-300' : 'bg-gray-900 border-gray-700 text-gray-400'}`}>Originale</button>
+                  <button onClick={() => updateBrand(b => b.logoStyle = 'rounded')} className={`flex-1 py-2 text-xs font-medium rounded border ${appState.brand.logoStyle === 'rounded' ? 'bg-indigo-900/50 border-indigo-500 text-indigo-300' : 'bg-gray-900 border-gray-700 text-gray-400'}`}>Arrotondato</button>
+                  <button onClick={() => updateBrand(b => b.logoStyle = 'circle')} className={`flex-1 py-2 text-xs font-medium rounded border ${appState.brand.logoStyle === 'circle' ? 'bg-indigo-900/50 border-indigo-500 text-indigo-300' : 'bg-gray-900 border-gray-700 text-gray-400'}`}>Cerchio</button>
+                </div>
+              </div>
+            </div>
+
+            <hr className="border-gray-800" />
+
             {/* Presets */}
             <div className="space-y-2">
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Preset Veloci</h3>
@@ -320,7 +347,7 @@ const Editor: React.FC<EditorProps> = ({ appState, setAppState, onExport, onRese
 
             <hr className="border-gray-800" />
 
-            {/* TYPOGRAPHY BUILDER - RESTORED */}
+            {/* TYPOGRAPHY BUILDER - RESTORED & UPGRADED */}
             <div className="space-y-4">
                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
                  <TypeIcon size={14} /> Tipografia Avanzata
@@ -350,12 +377,6 @@ const Editor: React.FC<EditorProps> = ({ appState, setAppState, onExport, onRese
                   <div>
                     <label className="text-xs text-gray-400 block mb-1">Font</label>
                     <select 
-                      // @ts-ignore
-                      value={appState.brand[typoTarget === 'sectionTitle' ? 'fontTitle' : 'fontBody']} // Simplification: actually BrandProfile splits fonts differently, but for custom styling we might want to override. 
-                      // For now, let's keep basic global fonts or implement specific overrides.
-                      // To keep it simple and consistent with previous logic, we use the global fonts logic but applied here for display, 
-                      // or better: let's allow changing the GLOBAL font that affects this target.
-                      // Actually, the app separates fontTitle and fontBody.
                       onChange={(e) => {
                          const val = e.target.value;
                          if (typoTarget === 'sectionTitle') updateBrand(b => b.fontTitle = val);
@@ -365,7 +386,35 @@ const Editor: React.FC<EditorProps> = ({ appState, setAppState, onExport, onRese
                     >
                       {FONTS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
                     </select>
-                    <p className="text-[10px] text-gray-500 mt-1">Nota: Titoli usa Font Titolo, altri usano Font Corpo.</p>
+                  </div>
+
+                  {/* COLOR & GRADIENT SELECTOR (NEW) */}
+                  <div className="grid grid-cols-2 gap-4">
+                     <div>
+                       <label className="text-xs text-gray-400 block mb-1">Colore Specifico</label>
+                       <div className="flex gap-2">
+                          <input 
+                            type="color" 
+                            value={appState.brand.styles[typoTarget].color || '#ffffff'} 
+                            onChange={(e) => updateTypo(typoTarget, 'color', e.target.value)} 
+                            className="w-8 h-8 rounded bg-transparent cursor-pointer" 
+                          />
+                          <button 
+                             onClick={() => updateTypo(typoTarget, 'color', undefined)} 
+                             className="text-xs text-gray-500 underline"
+                          >Usa Default</button>
+                       </div>
+                     </div>
+                     <div>
+                        <label className="text-xs text-gray-400 block mb-1">Sfumatura (Gradiente)</label>
+                        <select 
+                           value={appState.brand.styles[typoTarget].textGradient || ''}
+                           onChange={(e) => updateTypo(typoTarget, 'textGradient', e.target.value || undefined)}
+                           className="w-full bg-gray-900 border border-gray-700 text-white text-xs rounded p-2 outline-none"
+                        >
+                           {TEXT_GRADIENTS.map(g => <option key={g.name} value={g.value}>{g.name}</option>)}
+                        </select>
+                     </div>
                   </div>
 
                   {/* Toggles Row */}
