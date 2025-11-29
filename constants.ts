@@ -83,15 +83,7 @@ export const BACKGROUND_PRESETS = [
       "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1080&auto=format&fit=crop", // Pizza detail
       "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?q=80&w=1080&auto=format&fit=crop", // Pizza dark
       "https://images.unsplash.com/photo-1590947132387-155cc02f3212?q=80&w=1080&auto=format&fit=crop", // Pizza oven/rustic
-    ]
-  },
-  {
-    category: "Sushi & Asia",
-    images: [
-      "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=1080&auto=format&fit=crop", // Sushi dark
-      "https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=1080&auto=format&fit=crop", // Sushi bright
-      "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?q=80&w=1080&auto=format&fit=crop", // Ramen
-      "https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?q=80&w=1080&auto=format&fit=crop", // Asian food
+      "https://images.unsplash.com/photo-1585238342024-78d387f4a707?q=80&w=1080&auto=format&fit=crop", // Pizza slice
     ]
   },
   {
@@ -101,6 +93,17 @@ export const BACKGROUND_PRESETS = [
       "https://images.unsplash.com/photo-1595295333158-4742f28fbd85?q=80&w=1080&auto=format&fit=crop", // Pasta creamy
       "https://images.unsplash.com/photo-1544669896-1877995eb87a?q=80&w=1080&auto=format&fit=crop", // Mediterranean
       "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1080&auto=format&fit=crop", // Cocktail/Aperitivo
+      "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?q=80&w=1080&auto=format&fit=crop", // Spaghetti
+    ]
+  },
+  {
+    category: "Sushi & Asia",
+    images: [
+      "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=1080&auto=format&fit=crop", // Sushi dark
+      "https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=1080&auto=format&fit=crop", // Sushi bright
+      "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?q=80&w=1080&auto=format&fit=crop", // Ramen
+      "https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?q=80&w=1080&auto=format&fit=crop", // Asian food
+      "https://images.unsplash.com/photo-1552539618-7eec9b4d1796?q=80&w=1080&auto=format&fit=crop", // Dumplings
     ]
   },
   {
@@ -118,6 +121,7 @@ export const BACKGROUND_PRESETS = [
       "https://images.unsplash.com/photo-1561758033-d89a9ad46330?q=80&w=1080&auto=format&fit=crop", // Burger
       "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1080&auto=format&fit=crop", // Burger & Fries
       "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1080&auto=format&fit=crop", // Burger close
+      "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?q=80&w=1080&auto=format&fit=crop", // Diner style
     ]
   },
   {
@@ -126,6 +130,36 @@ export const BACKGROUND_PRESETS = [
       "https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=1080&auto=format&fit=crop", // Coffee
       "https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=1080&auto=format&fit=crop", // Cake/Dessert
       "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?q=80&w=1080&auto=format&fit=crop", // Cookies/Bakery
+      "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?q=80&w=1080&auto=format&fit=crop", // Croissant
+    ]
+  },
+  {
+    category: "Stagioni",
+    images: [
+      "https://images.unsplash.com/photo-1490750967868-58cb75069ed6?q=80&w=1080&auto=format&fit=crop", // Spring/Flowers
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1080&auto=format&fit=crop", // Summer/Beach
+      "https://images.unsplash.com/photo-1508264165352-258db2ebd59b?q=80&w=1080&auto=format&fit=crop", // Autumn/Leaves
+      "https://images.unsplash.com/photo-1483664852095-d6cc6870702d?q=80&w=1080&auto=format&fit=crop", // Winter/Snow
+      "https://images.unsplash.com/photo-1560159752-d6d027f3005a?q=80&w=1080&auto=format&fit=crop", // Fresh Summer Drink
+    ]
+  },
+  {
+    category: "Feste & Eventi",
+    images: [
+      "https://images.unsplash.com/photo-1512474932049-78ea696f9c42?q=80&w=1080&auto=format&fit=crop", // Christmas
+      "https://images.unsplash.com/photo-1576618148400-f54bed99fcf8?q=80&w=1080&auto=format&fit=crop", // Christmas Lights
+      "https://images.unsplash.com/photo-1508341591423-4347099e1f19?q=80&w=1080&auto=format&fit=crop", // Halloween/Pumpkin
+      "https://images.unsplash.com/photo-1530103862676-de3c9a59af38?q=80&w=1080&auto=format&fit=crop", // Party/NewYear
+      "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=1080&auto=format&fit=crop", // Wedding/Elegant
+    ]
+  },
+  {
+    category: "Texture & Astratto",
+    images: [
+      "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1080&auto=format&fit=crop", // Black texture
+      "https://images.unsplash.com/photo-1533035353720-f1c6a75cd8ab?q=80&w=1080&auto=format&fit=crop", // Grey concrete
+      "https://images.unsplash.com/photo-1524312792348-7357c9183494?q=80&w=1080&auto=format&fit=crop", // Paper texture
+      "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?q=80&w=1080&auto=format&fit=crop", // Wood texture
     ]
   }
 ];

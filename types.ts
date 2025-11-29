@@ -13,12 +13,21 @@ export interface MenuSection {
   items: MenuItem[];
 }
 
+export interface SocialInfo {
+  companyName?: string;
+  phone?: string;
+  instagram?: string;
+  tiktok?: string;
+  website?: string;
+}
+
 export interface FullMenu {
   title: string;
   subtitle?: string; // e.g., "Christmas 2025" or "Fixed Price 50€"
   fixedPrice?: string;
   sections: MenuSection[];
   footerNote?: string;
+  socials?: SocialInfo;
 }
 
 export interface TypographyStyle {

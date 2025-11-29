@@ -1,6 +1,6 @@
 import React from "react";
 import { BrandProfile, FullMenu, TypographyStyle } from "../types";
-import { Star } from "lucide-react";
+import { Star, AlertCircle, Instagram, Globe, Phone, Music } from "lucide-react";
 
 interface DigitalMenuProps {
   menu: FullMenu;
@@ -174,11 +174,45 @@ const DigitalMenu: React.FC<DigitalMenuProps> = ({ menu, brand, previewMode = "m
         </div>
 
         {/* Footer */}
-        {menu.footerNote && (
-          <div className="mt-12 text-center text-sm opacity-70 border-t border-white/20 pt-6">
-            {menu.footerNote}
-          </div>
-        )}
+        <div className="mt-12 pt-6 border-t border-white/10 break-inside-avoid">
+           {menu.footerNote && (
+            <div className="text-center text-sm opacity-70 mb-6">
+              {menu.footerNote}
+            </div>
+           )}
+
+           {/* Socials & Contacts */}
+           {menu.socials && (
+             <div className="flex flex-col items-center gap-4 text-sm opacity-90">
+                {menu.socials.companyName && (
+                  <div className="font-bold tracking-wider uppercase text-center">{menu.socials.companyName}</div>
+                )}
+                
+                <div className="flex flex-wrap justify-center gap-4 md:gap-8">
+                   {menu.socials.phone && (
+                     <a href={`tel:${menu.socials.phone}`} className="flex items-center gap-2 hover:text-white transition-colors" style={{ color: brand.accentColor }}>
+                        <Phone size={16} /> <span>{menu.socials.phone}</span>
+                     </a>
+                   )}
+                   {menu.socials.instagram && (
+                     <div className="flex items-center gap-2">
+                        <Instagram size={16} /> <span>{menu.socials.instagram.replace(/^@/, '')}</span>
+                     </div>
+                   )}
+                   {menu.socials.tiktok && (
+                     <div className="flex items-center gap-2">
+                        <Music size={16} /> <span>{menu.socials.tiktok.replace(/^@/, '')}</span>
+                     </div>
+                   )}
+                   {menu.socials.website && (
+                     <div className="flex items-center gap-2">
+                        <Globe size={16} /> <span>{menu.socials.website.replace(/^https?:\/\//, '')}</span>
+                     </div>
+                   )}
+                </div>
+             </div>
+           )}
+        </div>
 
       </div>
     </div>
